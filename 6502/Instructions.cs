@@ -55,5 +55,14 @@ namespace C64Emu._6502
                 .SetOrClear(ProcessorStatus.Z, result == 0)
                 .SetOrClear(ProcessorStatus.N, (result & 0x80) != 0);
         }
+
+        public static void ORA(Operand op, Cpu cpu)
+        {
+            var result = (byte)(cpu.A | op.Value);
+            cpu.A = result;
+            cpu.P = cpu.P
+                .SetOrClear(ProcessorStatus.Z, result == 0)
+                .SetOrClear(ProcessorStatus.N, (result & 0x80) != 0);
+        }
     }
 }
