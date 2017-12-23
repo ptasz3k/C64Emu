@@ -29,5 +29,13 @@ namespace C64Emu._6502
                 .SetOrClear(ProcessorStatus.Z, op.Value == 0)
                 .SetOrClear(ProcessorStatus.N, (op.Value & 0x80) != 0);
         }
+
+        public static void LDY(Operand op, Cpu cpu)
+        {
+            cpu.Y = op.Value;
+            cpu.P = cpu.P
+                .SetOrClear(ProcessorStatus.Z, op.Value == 0)
+                .SetOrClear(ProcessorStatus.N, (op.Value & 0x80) != 0);
+        }
     }
 }
