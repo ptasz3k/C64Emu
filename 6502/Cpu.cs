@@ -99,7 +99,7 @@ namespace C64Emu._6502
         public Cpu(Memory memory)
         {
             Memory = memory;
-            PC = 0x1000;
+            PC = 0x0000;
             _s = 0xff;
             P = 0;
             A = 0;
