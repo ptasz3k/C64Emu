@@ -57,7 +57,7 @@ namespace C64Emu._6502
             Memory = memory;
             PC = 0x0000;
             S = 0xff;
-            P = 0;
+            P = ProcessorStatus._;
             A = 0;
             X = 0;
             Y = 0;
