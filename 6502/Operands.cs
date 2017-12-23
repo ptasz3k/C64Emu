@@ -18,7 +18,20 @@ namespace C64Emu._6502
             new Operand(0x7d, Mnemonic.ADC, AddressMode.AbsoluteX, 4, 3, OpLogic.Read, Instructions.ADC),
             new Operand(0x79, Mnemonic.ADC, AddressMode.AbsoluteY, 4, 3, OpLogic.Read, Instructions.ADC),
             new Operand(0x61, Mnemonic.ADC, AddressMode.IndexedIndirect, 6, 2, OpLogic.Read, Instructions.ADC),
-            new Operand(0x71, Mnemonic.ADC, AddressMode.IndirectIndexed, 5, 2, OpLogic.Read, Instructions.ADC)
+            new Operand(0x71, Mnemonic.ADC, AddressMode.IndirectIndexed, 5, 2, OpLogic.Read, Instructions.ADC),
+
+            // LDA
+            new Operand(0xa9, Mnemonic.LDA, AddressMode.Immediate, 2, 2, OpLogic.Read, Instructions.LDA),
+            new Operand(0xa5, Mnemonic.LDA, AddressMode.ZeroPage, 3, 2, OpLogic.Read, Instructions.LDA),
+            new Operand(0xb5, Mnemonic.LDA, AddressMode.ZeroPageX, 4, 2, OpLogic.Read, Instructions.LDA),
+            new Operand(0xad, Mnemonic.LDA, AddressMode.Absolute, 4, 3, OpLogic.Read, Instructions.LDA),
+            new Operand(0xbd, Mnemonic.LDA, AddressMode.AbsoluteX, 4, 3, OpLogic.Read, Instructions.LDA),
+            new Operand(0xb9, Mnemonic.LDA, AddressMode.AbsoluteY, 4, 3, OpLogic.Read, Instructions.LDA),
+            new Operand(0xa1, Mnemonic.LDA, AddressMode.IndexedIndirect, 6, 2, OpLogic.Read, Instructions.LDA),
+            new Operand(0xb1, Mnemonic.LDA, AddressMode.IndirectIndexed, 5, 2, OpLogic.Read, Instructions.LDA),
+
+
+
         }.ToImmutableDictionary(op => op.Code);
     }
 }
