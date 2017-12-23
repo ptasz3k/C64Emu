@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="NLog" Version="4.5.0-rc03" />
+    <PackageReference Include="System.Collections.Immutable" Version="1.4.0" />
   </ItemGroup>
 
 </Project>

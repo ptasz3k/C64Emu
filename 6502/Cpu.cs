@@ -113,9 +113,7 @@ namespace C64Emu._6502
             if (_currentInstructionState == InstructionState.FetchOpCode)
             {
                 var opCode = Memory.Mem[PC];
-                _currentOperand = Operands.List.FirstOrDefault(op => op.Code == opCode);
-
-                if (_currentOperand == null)
+                if (!Operands.List.TryGetValue(opCode, out _currentOperand))
                 {
                     _logger.Fatal($"Unknown operand for opCode {opCode}, pc={PC}.");
                     throw new NotImplementedException();
