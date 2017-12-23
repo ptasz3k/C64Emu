@@ -17,8 +17,17 @@ namespace C64Emu._6502
         public static void LDA(Operand op, Cpu cpu)
         {
             cpu.A = op.Value;
-            var p = op.Value == 0 ? cpu.P.Set(ProcessorStatus.Z) : cpu.P.Clear(ProcessorStatus.Z);
-            cpu.P = (op.Value & 0x80) != 0 ? p.Set(ProcessorStatus.N) : p.Clear(ProcessorStatus.N);
+            cpu.P = cpu.P
+                .SetOrClear(ProcessorStatus.Z, op.Value == 0)
+                .SetOrClear(ProcessorStatus.N, (op.Value & 0x80) != 0);
+        }
+
+        public static void LDX(Operand op, Cpu cpu)
+        {
+            cpu.X = op.Value;
+            cpu.P = cpu.P
+                .SetOrClear(ProcessorStatus.Z, op.Value == 0)
+                .SetOrClear(ProcessorStatus.N, (op.Value & 0x80) != 0);
         }
     }
 }

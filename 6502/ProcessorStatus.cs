@@ -63,5 +63,20 @@ namespace C64Emu._6502
             copy |= flag;
             return copy;
         }
+
+        public static ProcessorStatus SetOrClear(this ProcessorStatus self, ProcessorStatus flag, bool set)
+        {
+            var copy = self;
+            if (set)
+            {
+                copy |= flag;
+            }
+            else
+            {
+                copy &= ~flag;
+            }
+
+            return copy;
+        }
     }
 }
