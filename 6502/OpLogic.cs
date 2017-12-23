@@ -50,6 +50,10 @@ namespace C64Emu._6502
                     cpu.PC++;
                     break;
                 case 2
+                when op.AddressMode == AddressMode.Implied:
+                    value = cpu.Memory.Mem[cpu.PC]; // FIXME: just for fun, cpu does it, but it throws this value away
+                    break;
+                case 2
                 when op.AddressMode == AddressMode.Absolute
                 || op.AddressMode == AddressMode.ZeroPage
                 || op.AddressMode == AddressMode.ZeroPageX

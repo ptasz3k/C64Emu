@@ -6,7 +6,7 @@ namespace C64Emu._6502
 {
     public enum AddressMode
     {
-        Implicit,
+        Implied,
         Accumulator,
         Immediate,
         ZeroPage,
