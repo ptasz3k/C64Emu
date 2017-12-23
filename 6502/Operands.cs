@@ -44,6 +44,16 @@ namespace C64Emu._6502
             new Operand(0xac, Mnemonic.LDY, AddressMode.Absolute, 4, 3, OpLogic.Read, Instructions.LDY),
             new Operand(0xbc, Mnemonic.LDY, AddressMode.AbsoluteX, 4, 3, OpLogic.Read, Instructions.LDY),
 
+            // EOR
+            new Operand(0x49, Mnemonic.EOR, AddressMode.Immediate, 2, 2, OpLogic.Read, Instructions.EOR),
+            new Operand(0x45, Mnemonic.EOR, AddressMode.ZeroPage, 3, 2, OpLogic.Read, Instructions.EOR),
+            new Operand(0x55, Mnemonic.EOR, AddressMode.ZeroPageX, 4, 2, OpLogic.Read, Instructions.EOR),
+            new Operand(0x4d, Mnemonic.EOR, AddressMode.Absolute, 4, 3, OpLogic.Read, Instructions.EOR),
+            new Operand(0x5d, Mnemonic.EOR, AddressMode.AbsoluteX, 4, 3, OpLogic.Read, Instructions.EOR),
+            new Operand(0x59, Mnemonic.EOR, AddressMode.AbsoluteY, 4, 3, OpLogic.Read, Instructions.EOR),
+            new Operand(0x41, Mnemonic.EOR, AddressMode.IndexedIndirect, 6, 2, OpLogic.Read, Instructions.EOR),
+            new Operand(0x51, Mnemonic.EOR, AddressMode.IndirectIndexed, 5, 2, OpLogic.Read, Instructions.EOR),
+
         }.ToImmutableDictionary(op => op.Code);
     }
 }
