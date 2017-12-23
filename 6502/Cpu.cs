@@ -26,7 +26,7 @@ namespace C64Emu._6502
         /// <summary>
         /// Stack pointer
         /// </summary>
-        public byte _s;
+        public byte S;
 
         /// <summary>
         /// Processor status register
@@ -56,7 +56,7 @@ namespace C64Emu._6502
         {
             Memory = memory;
             PC = 0x0000;
-            _s = 0xff;
+            S = 0xff;
             P = 0;
             A = 0;
             X = 0;
