@@ -96,27 +96,29 @@ namespace C64Emu._6502
     {
         private static Logger _logger = LogManager.GetCurrentClassLogger();
 
-        private static Operand IncreaseCycleCount(Operand op, bool pageBoundCrossed = false)
+        private static Operand NextCycleOperand(Operand op, bool pageBoundCrossed = false, byte? addressLo = null, byte? addressHi = null, byte? value = null)
         {
-            return new Operand
-            {
-                Code = op.Code,
-                Mnemonic = op.Mnemonic,
-                AddressMode = op.AddressMode,
-                Tim = (byte)(op.Tim + 1),
-                MaxTim = (byte)(pageBoundCrossed ? op.MaxTim + 1 : op.MaxTim),
-                Len = op.Len,
-                Run = op.Run,
-                RunSpecific = op.RunSpecific,
-                AddressLo = op.AddressLo,
-                AddressHi = op.AddressHi,
-                Value = op.Value
-            };
+            return new Operand(
+                op.Code,
+                op.Mnemonic,
+                op.AddressMode,
+                (byte)(pageBoundCrossed ? op.MaxTim + 1 : op.MaxTim),
+                op.Len,
+                op.Run,
+                op.RunSpecific,
+                (byte)(op.Tim + 1),
+                addressLo ?? op.AddressLo,
+                addressHi ?? op.AddressHi,
+                value ?? op.Value
+            );
         }
 
         public static Operand Read(Operand op, Cpu cpu)
         {
             var pageCross = false;
+            byte? addressLo = null;
+            byte? addressHi = null;
+            byte? value = null;
 
             switch (op.Tim)
             {
@@ -131,7 +133,7 @@ namespace C64Emu._6502
                     break;
                 case 2
                 when op.AddressMode == AddressMode.Immediate:
-                    op.Value = cpu.Memory.Mem[cpu.PC];
+                    value = cpu.Memory.Mem[cpu.PC];
                     cpu.PC++;
                     break;
                 case 2
@@ -143,45 +145,43 @@ namespace C64Emu._6502
                 || op.AddressMode == AddressMode.AbsoluteY
                 || op.AddressMode == AddressMode.IndexedIndirect
                 || op.AddressMode == AddressMode.IndirectIndexed:
-                    op.AddressLo = cpu.Memory.Mem[cpu.PC];
+                    addressLo = cpu.Memory.Mem[cpu.PC];
                     cpu.PC++;
                     break;
                 case 3
                 when op.AddressMode == AddressMode.Absolute
                 || op.AddressMode == AddressMode.AbsoluteX
                 || op.AddressMode == AddressMode.AbsoluteY:
-                    op.AddressHi = cpu.Memory.Mem[cpu.PC];
+                    addressHi = cpu.Memory.Mem[cpu.PC];
                     cpu.PC++;
                     break;
                 case 3
                 when op.AddressMode == AddressMode.ZeroPage:
-                    op.Value = cpu.Memory.Mem[op.AddressLo];
+                    value = cpu.Memory.Mem[op.AddressLo];
                     break;
                 case 3
                 when op.AddressMode == AddressMode.ZeroPageX:
-                    op.AddressLo += cpu.X;
-                    op.AddressHi = 0; 
+                    addressLo = (byte)(op.AddressLo + cpu.X);
                     break;
                 case 3
                 when op.AddressMode == AddressMode.ZeroPageY:
-                    op.AddressLo += cpu.Y;
-                    op.AddressHi = 0; 
+                    addressLo = (byte)(op.AddressLo + cpu.Y);
                     break;
                 case 3
                 when op.AddressMode == AddressMode.IndexedIndirect:
-                    op.AddressLo += cpu.X;
+                    addressLo = (byte)(op.AddressLo + cpu.X);
                     break;
                 case 3
                 when op.AddressMode == AddressMode.IndirectIndexed:
                     // we've got to overwrite pointer address here, so we move it temporarily to addressHi
-                    op.AddressHi = op.AddressLo;
-                    op.AddressLo = cpu.Memory.Mem[op.AddressLo];
+                    addressHi = op.AddressLo;
+                    addressLo = cpu.Memory.Mem[op.AddressLo];
                     break;
                 case 4
                 when op.AddressMode == AddressMode.Absolute
                 || op.AddressMode == AddressMode.ZeroPageX
                 || op.AddressMode == AddressMode.ZeroPageY:
-                    op.Value = cpu.Memory.Mem[op.AddressLo | (op.AddressHi << 8)];
+                    value = cpu.Memory.Mem[op.AddressLo | (op.AddressHi << 8)];
                     break;
                 case 4
                 when op.AddressMode == AddressMode.AbsoluteX
@@ -190,71 +190,69 @@ namespace C64Emu._6502
                     if (op.AddressLo + offset > 0xff)
                     {
                         // page cross, read in next cycle
-                        op.AddressLo += offset;
-                        op.AddressHi += 1;
+                        addressLo = (byte)(op.AddressLo + offset);
+                        addressHi = (byte)(op.AddressHi + 1);
                         pageCross = true;
                     }
                     else
                     {
-                        op.AddressLo += offset;
-                        op.Value = cpu.Memory.Mem[op.AddressLo | (op.AddressHi << 8)];
+                        addressLo = (byte)(op.AddressLo + offset);
+                        value = cpu.Memory.Mem[addressLo.Value | (op.AddressHi << 8)];
                     }
                     break;
                 case 4
                 when op.AddressMode == AddressMode.IndexedIndirect:
                     // we've got to overwrite pointer address here, so we move it temporarily to addressHi
-                    op.AddressHi = op.AddressLo;
-                    op.AddressLo = cpu.Memory.Mem[op.AddressLo];
+                    addressHi = op.AddressLo;
+                    addressLo = cpu.Memory.Mem[op.AddressLo];
                     break;
                 case 4
                 when op.AddressMode == AddressMode.IndirectIndexed:
                     // pointer address is now in addressHi
                     byte pointerHi = (byte)(op.AddressHi + 1);
-                    op.AddressHi = cpu.Memory.Mem[pointerHi];
+                    addressHi = cpu.Memory.Mem[pointerHi];
                     break;
                 case 5
                 when op.AddressMode == AddressMode.AbsoluteX
                 || op.AddressMode == AddressMode.AbsoluteY:
-                    op.Value = cpu.Memory.Mem[op.AddressLo | (op.AddressHi << 8)];
+                    value = cpu.Memory.Mem[op.AddressLo | (op.AddressHi << 8)];
                     break;
                 case 5
                 when op.AddressMode == AddressMode.IndexedIndirect:
                     // pointer address is now in addressHi
                     pointerHi = (byte)(op.AddressHi + 1);
-                    op.AddressHi = cpu.Memory.Mem[pointerHi];
+                    addressHi = cpu.Memory.Mem[pointerHi];
                     break;
                 case 5
                 when op.AddressMode == AddressMode.IndirectIndexed:
                     if (op.AddressLo + cpu.Y > 0xff)
                     {
-                        op.AddressLo += cpu.Y;
-                        op.AddressHi += 1;
+                        addressLo = (byte)(op.AddressLo + cpu.Y);
+                        addressHi = (byte)(op.AddressHi + 1);
                         pageCross = true;
                     }
                     else
                     {
-                        op.AddressLo += cpu.Y;
-                        op.Value = cpu.Memory.Mem[op.AddressLo | (op.AddressHi << 8)];
+                        addressLo = (byte)(op.AddressLo + cpu.Y);
+                        value = cpu.Memory.Mem[addressLo.Value | (op.AddressHi << 8)];
                     }
                     break;
                 case 6
                 when op.AddressMode == AddressMode.IndexedIndirect
                 || op.AddressMode == AddressMode.IndirectIndexed:
-                    op.Value = cpu.Memory.Mem[op.AddressLo | (op.AddressHi << 8)];
+                    value = cpu.Memory.Mem[op.AddressLo | (op.AddressHi << 8)];
                     break;
-
-
                 default:
                     _logger.Fatal($"");
                     throw new NotImplementedException($"Unknown state for {op.Mnemonic} ({op.AddressMode}), cycle={op.Tim}/{op.MaxTim}.");
                     break;
             }
 
-            var next = IncreaseCycleCount(op, pageCross);
+            var next = NextCycleOperand(op, pageCross, addressLo, addressHi, value);
 
             if (next.Tim > next.MaxTim)
             {
-                op.RunSpecific(op, cpu);
+                next.RunSpecific(next, cpu);
             }
 
             return next;
@@ -263,51 +261,67 @@ namespace C64Emu._6502
 
     public class Operand
     {
+        public Operand(byte code, Mnemonic mnemonic, AddressMode addressMode, byte maxTim, byte len, Func<Operand, Cpu, Operand> run,
+            Action<Operand, Cpu> runSpecific, byte tim = 1, byte addressLo = 0, byte addressHi = 0, byte value = 0)
+        {
+            Code = code;
+            Mnemonic = mnemonic;
+            AddressMode = addressMode;
+            MaxTim = maxTim;
+            Len = len;
+            Run = run;
+            RunSpecific = runSpecific;
+            Tim = tim;
+            AddressLo = addressLo;
+            AddressHi = addressHi;
+            Value = value;
+        }
+
         /// <summary>
         /// Opcode
         /// </summary>
-        public byte Code { get; set; }
+        public byte Code { get; }
 
         /// <summary>
         /// Mnemonic of operand
         /// </summary>
-        public Mnemonic Mnemonic { get; set; }
+        public Mnemonic Mnemonic { get; }
 
         /// <summary>
         /// Addressing mode
         /// </summary>
-        public AddressMode AddressMode {get;set;}
-
-        /// <summary>
-        /// Current cycle in instruction processing
-        /// </summary>
-        public byte Tim { get; set; } = 1;
+        public AddressMode AddressMode { get; }
 
         /// <summary>
         /// Maximum cycle count of instruction processing
         /// </summary>
-        public byte MaxTim { get; set; }
+        public byte MaxTim { get; }
 
         /// <summary>
         /// Instruction length in memory (bytes)
         /// </summary>
-        public byte Len { get; set; }
+        public byte Len { get; }
 
         /// <summary>
         /// Instruction type processing logic
         /// </summary>
-        public Func<Operand, Cpu, Operand> Run { get; set; }
+        public Func<Operand, Cpu, Operand> Run { get; }
 
         /// <summary>
         /// Specific instruction logic
         /// </summary>
-        public Action<Operand, Cpu> RunSpecific { get; set; }
+        public Action<Operand, Cpu> RunSpecific { get; }
 
-        public byte AddressLo { get; set; } = 0;
+        /// <summary>
+        /// Current cycle in instruction processing
+        /// </summary>
+        public byte Tim { get; }
 
-        public byte AddressHi { get; set; } = 0;
+        public byte AddressLo { get; }
 
-        public byte Value { get; set; } = 0;
+        public byte AddressHi { get; }
+
+        public byte Value { get; }
     }
 
     public static class Operands
@@ -315,14 +329,14 @@ namespace C64Emu._6502
         public static Operand[] List { get; } = new Operand[]
         {
             // ADC
-            new Operand { Code = 0x69, Mnemonic = Mnemonic.ADC, AddressMode = AddressMode.Immediate, MaxTim = 2, Len = 2, Run = OpLogic.Read, RunSpecific = Instructions.ADC },
-            new Operand { Code = 0x65, Mnemonic = Mnemonic.ADC, AddressMode = AddressMode.ZeroPage, MaxTim = 3, Len = 2, Run = OpLogic.Read, RunSpecific = Instructions.ADC },
-            new Operand { Code = 0x75, Mnemonic = Mnemonic.ADC, AddressMode = AddressMode.ZeroPageX, MaxTim = 4, Len = 2, Run = OpLogic.Read, RunSpecific = Instructions.ADC },
-            new Operand { Code = 0x6d, Mnemonic = Mnemonic.ADC, AddressMode = AddressMode.Absolute, MaxTim = 4, Len = 3, Run = OpLogic.Read, RunSpecific = Instructions.ADC },
-            new Operand { Code = 0x7d, Mnemonic = Mnemonic.ADC, AddressMode = AddressMode.AbsoluteX, MaxTim = 4, Len = 3, Run = OpLogic.Read, RunSpecific = Instructions.ADC },
-            new Operand { Code = 0x79, Mnemonic = Mnemonic.ADC, AddressMode = AddressMode.AbsoluteY, MaxTim = 4, Len = 3, Run = OpLogic.Read, RunSpecific = Instructions.ADC },
-            new Operand { Code = 0x61, Mnemonic = Mnemonic.ADC, AddressMode = AddressMode.IndexedIndirect, MaxTim = 6, Len = 2, Run = OpLogic.Read, RunSpecific = Instructions.ADC },
-            new Operand { Code = 0x71, Mnemonic = Mnemonic.ADC, AddressMode = AddressMode.IndirectIndexed, MaxTim = 5, Len = 2, Run = OpLogic.Read, RunSpecific = Instructions.ADC }
+            new Operand(0x69, Mnemonic.ADC, AddressMode.Immediate, 2, 2, OpLogic.Read, Instructions.ADC),
+            new Operand(0x65, Mnemonic.ADC, AddressMode.ZeroPage, 3, 2, OpLogic.Read, Instructions.ADC),
+            new Operand(0x75, Mnemonic.ADC, AddressMode.ZeroPageX, 4, 2, OpLogic.Read, Instructions.ADC),
+            new Operand(0x6d, Mnemonic.ADC, AddressMode.Absolute, 4, 3, OpLogic.Read, Instructions.ADC),
+            new Operand(0x7d, Mnemonic.ADC, AddressMode.AbsoluteX, 4, 3, OpLogic.Read, Instructions.ADC),
+            new Operand(0x79, Mnemonic.ADC, AddressMode.AbsoluteY, 4, 3, OpLogic.Read, Instructions.ADC),
+            new Operand(0x61, Mnemonic.ADC, AddressMode.IndexedIndirect, 6, 2, OpLogic.Read, Instructions.ADC),
+            new Operand(0x71, Mnemonic.ADC, AddressMode.IndirectIndexed, 5, 2, OpLogic.Read, Instructions.ADC)
 
         };
     }
