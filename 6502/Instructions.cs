@@ -107,5 +107,13 @@ namespace C64Emu._6502
                 .SetOrClrIf(ProcessorStatus.Z, result == 0)
                 .SetOrClrIf(ProcessorStatus.N, (result & 0x80) != 0);
         }
+
+        public static void BIT(Operand op, Cpu cpu)
+        {
+            cpu.P = cpu.P
+                .SetOrClrIf(ProcessorStatus.N, (op.Value & 0x80) != 0)
+                .SetOrClrIf(ProcessorStatus.V, (op.Value & 0x40) != 0)
+                .SetOrClrIf(ProcessorStatus.Z, (cpu.A & op.Value) == 0);
+        }
     }
 }
