@@ -9,16 +9,22 @@ namespace C64Emu._6502
     {
         private static Logger _logger = LogManager.GetCurrentClassLogger();
 
-        private static void BinaryADC(byte value, Cpu cpu)
+        private static void BinaryADC(byte value, Cpu cpu, bool actAsCMP = false)
         {
             var sum = cpu.A + value + (cpu.P.IsSet(ProcessorStatus.C) ? 1 : 0);
             var result = (byte)(sum & 0xff);
-            cpu.P = cpu.P
+            var p = cpu.P
                 .SetOrClrIf(ProcessorStatus.C, sum > 0xff)
-                .SetOrClrIf(ProcessorStatus.V, ((cpu.A ^ result) & (value ^ result) & 0x80) != 0)
                 .SetOrClrIf(ProcessorStatus.N, (result & 0x80) != 0)
                 .SetOrClrIf(ProcessorStatus.Z, result == 0);
-            cpu.A = result;
+
+            if (!actAsCMP)
+            {
+                p = p.SetOrClrIf(ProcessorStatus.V, ((cpu.A ^ result) & (value ^ result) & 0x80) != 0);
+                cpu.A = result;
+            }
+
+            cpu.P = p;
         }
 
         public static void ADC(Operand op, Cpu cpu)
@@ -44,6 +50,11 @@ namespace C64Emu._6502
             {
                 throw new NotImplementedException();
             }
+        }
+
+        public static void CMP(Operand op, Cpu cpu)
+        {
+            BinaryADC((byte)(op.Value ^ 0xff), cpu, true);
         }
 
         public static void LDA(Operand op, Cpu cpu)

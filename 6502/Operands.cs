@@ -84,7 +84,17 @@ namespace C64Emu._6502
             new Operand(0xe1, Mnemonic.SBC, AddressMode.IndexedIndirect, 6, 2, OpLogic.Read, Instructions.SBC),
             new Operand(0xf1, Mnemonic.SBC, AddressMode.IndirectIndexed, 5, 2, OpLogic.Read, Instructions.SBC),
 
-            // TODO: SBC, CMP, BIT, LAX, NOP
+            // CMP
+            new Operand(0xc9, Mnemonic.CMP, AddressMode.Immediate, 2, 2, OpLogic.Read, Instructions.CMP),
+            new Operand(0xc5, Mnemonic.CMP, AddressMode.ZeroPage, 3, 2, OpLogic.Read, Instructions.CMP),
+            new Operand(0xd5, Mnemonic.CMP, AddressMode.ZeroPageX, 4, 2, OpLogic.Read, Instructions.CMP),
+            new Operand(0xcd, Mnemonic.CMP, AddressMode.Absolute, 4, 3, OpLogic.Read, Instructions.CMP),
+            new Operand(0xdd, Mnemonic.CMP, AddressMode.AbsoluteX, 4, 3, OpLogic.Read, Instructions.CMP),
+            new Operand(0xd9, Mnemonic.CMP, AddressMode.AbsoluteY, 4, 3, OpLogic.Read, Instructions.CMP),
+            new Operand(0xc1, Mnemonic.CMP, AddressMode.IndexedIndirect, 6, 2, OpLogic.Read, Instructions.CMP),
+            new Operand(0xd1, Mnemonic.CMP, AddressMode.IndirectIndexed, 5, 2, OpLogic.Read, Instructions.CMP),
+
+            // TODO: CMP, BIT, LAX, NOP
         }.ToImmutableDictionary(op => op.Code);
     }
 }
