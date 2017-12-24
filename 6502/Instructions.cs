@@ -181,5 +181,37 @@ namespace C64Emu._6502
         {
             cpu.P = cpu.P.Set(ProcessorStatus.I);
         }
+        
+        public static void INX(Operand op, Cpu cpu)
+        {
+            cpu.X += 1;
+            cpu.P = cpu.P
+                .SetOrClrIf(ProcessorStatus.Z, cpu.X == 0)
+                .SetOrClrIf(ProcessorStatus.N, (cpu.X & 0x80) != 0);
+        }
+
+        public static void INY(Operand op, Cpu cpu)
+        {
+            cpu.Y += 1;
+            cpu.P = cpu.P
+                .SetOrClrIf(ProcessorStatus.Z, cpu.Y == 0)
+                .SetOrClrIf(ProcessorStatus.N, (cpu.Y & 0x80) != 0);
+        }
+
+        public static void DEX(Operand op, Cpu cpu)
+        {
+            cpu.X -= 1;
+            cpu.P = cpu.P
+                .SetOrClrIf(ProcessorStatus.Z, cpu.X == 0)
+                .SetOrClrIf(ProcessorStatus.N, (cpu.X & 0x80) != 0);
+        }
+
+        public static void DEY(Operand op, Cpu cpu)
+        {
+            cpu.Y -= 1;
+            cpu.P = cpu.P
+                .SetOrClrIf(ProcessorStatus.Z, cpu.Y == 0)
+                .SetOrClrIf(ProcessorStatus.N, (cpu.Y & 0x80) != 0);
+        }
     }
 }
