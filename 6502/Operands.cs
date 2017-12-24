@@ -98,7 +98,16 @@ namespace C64Emu._6502
             new Operand(0x24, Mnemonic.BIT, AddressMode.ZeroPage, 3, 2, OpLogic.Read, Instructions.BIT),
             new Operand(0x2c, Mnemonic.BIT, AddressMode.Absolute, 4, 3, OpLogic.Read, Instructions.BIT),
 
-            // TODO: LAX, NOP
+            // NOP
+            new Operand(0xea, Mnemonic.NOP, AddressMode.Implied, 2, 1, OpLogic.Read, Instructions.NOP),
+
+            // Clear processor flag instructions
+            new Operand(0x18, Mnemonic.CLC, AddressMode.Implied, 2, 1, OpLogic.Read, Instructions.CLC),
+            new Operand(0xd8, Mnemonic.CLD, AddressMode.Implied, 2, 1, OpLogic.Read, Instructions.CLD),
+            new Operand(0x58, Mnemonic.CLI, AddressMode.Implied, 2, 1, OpLogic.Read, Instructions.CLI),
+            new Operand(0xb8, Mnemonic.CLV, AddressMode.Implied, 2, 1, OpLogic.Read, Instructions.CLV),
+
+            // TODO: LAX
         }.ToImmutableDictionary(op => op.Code);
     }
 }

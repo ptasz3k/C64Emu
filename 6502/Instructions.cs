@@ -115,5 +115,27 @@ namespace C64Emu._6502
                 .SetOrClrIf(ProcessorStatus.V, (op.Value & 0x40) != 0)
                 .SetOrClrIf(ProcessorStatus.Z, (cpu.A & op.Value) == 0);
         }
+
+        public static void NOP(Operand op, Cpu cpu) { }
+
+        public static void CLC(Operand op, Cpu cpu)
+        {
+            cpu.P = cpu.P.Clr(ProcessorStatus.C);
+        }
+
+        public static void CLD(Operand op, Cpu cpu)
+        {
+            cpu.P = cpu.P.Clr(ProcessorStatus.D);
+        }
+
+        public static void CLI(Operand op, Cpu cpu)
+        {
+            cpu.P = cpu.P.Clr(ProcessorStatus.I);
+        }
+
+        public static void CLV(Operand op, Cpu cpu)
+        {
+            cpu.P = cpu.P.Clr(ProcessorStatus.V);
+        }
     }
 }
