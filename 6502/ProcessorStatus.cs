@@ -50,7 +50,7 @@ namespace C64Emu._6502
 
     public static class ProcessorStatusExtensions
     {
-        public static ProcessorStatus Clear(this ProcessorStatus self, ProcessorStatus flag)
+        public static ProcessorStatus Clr(this ProcessorStatus self, ProcessorStatus flag)
         {
             var copy = self;
             copy &= ~flag;
@@ -64,7 +64,7 @@ namespace C64Emu._6502
             return copy;
         }
 
-        public static ProcessorStatus SetOrClear(this ProcessorStatus self, ProcessorStatus flag, bool set)
+        public static ProcessorStatus SetOrClrIf(this ProcessorStatus self, ProcessorStatus flag, bool set)
         {
             var copy = self;
             if (set)

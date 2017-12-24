@@ -14,10 +14,10 @@ namespace C64Emu._6502
             var sum = cpu.A + value + (cpu.P.IsSet(ProcessorStatus.C) ? 1 : 0);
             var result = (byte)(sum & 0xff);
             cpu.P = cpu.P
-                .SetOrClear(ProcessorStatus.C, sum > 0xff)
-                .SetOrClear(ProcessorStatus.V, ((cpu.A ^ result) & (value ^ result) & 0x80) != 0)
-                .SetOrClear(ProcessorStatus.N, (result & 0x80) != 0)
-                .SetOrClear(ProcessorStatus.Z, result == 0);
+                .SetOrClrIf(ProcessorStatus.C, sum > 0xff)
+                .SetOrClrIf(ProcessorStatus.V, ((cpu.A ^ result) & (value ^ result) & 0x80) != 0)
+                .SetOrClrIf(ProcessorStatus.N, (result & 0x80) != 0)
+                .SetOrClrIf(ProcessorStatus.Z, result == 0);
             cpu.A = result;
         }
 
@@ -50,24 +50,24 @@ namespace C64Emu._6502
         {
             cpu.A = op.Value;
             cpu.P = cpu.P
-                .SetOrClear(ProcessorStatus.Z, op.Value == 0)
-                .SetOrClear(ProcessorStatus.N, (op.Value & 0x80) != 0);
+                .SetOrClrIf(ProcessorStatus.Z, op.Value == 0)
+                .SetOrClrIf(ProcessorStatus.N, (op.Value & 0x80) != 0);
         }
 
         public static void LDX(Operand op, Cpu cpu)
         {
             cpu.X = op.Value;
             cpu.P = cpu.P
-                .SetOrClear(ProcessorStatus.Z, op.Value == 0)
-                .SetOrClear(ProcessorStatus.N, (op.Value & 0x80) != 0);
+                .SetOrClrIf(ProcessorStatus.Z, op.Value == 0)
+                .SetOrClrIf(ProcessorStatus.N, (op.Value & 0x80) != 0);
         }
 
         public static void LDY(Operand op, Cpu cpu)
         {
             cpu.Y = op.Value;
             cpu.P = cpu.P
-                .SetOrClear(ProcessorStatus.Z, op.Value == 0)
-                .SetOrClear(ProcessorStatus.N, (op.Value & 0x80) != 0);
+                .SetOrClrIf(ProcessorStatus.Z, op.Value == 0)
+                .SetOrClrIf(ProcessorStatus.N, (op.Value & 0x80) != 0);
         }
 
         public static void EOR(Operand op, Cpu cpu)
@@ -75,8 +75,8 @@ namespace C64Emu._6502
             var result = (byte)(cpu.A ^ op.Value);
             cpu.A = result;
             cpu.P = cpu.P
-                .SetOrClear(ProcessorStatus.Z, result == 0)
-                .SetOrClear(ProcessorStatus.N, (result & 0x80) != 0);
+                .SetOrClrIf(ProcessorStatus.Z, result == 0)
+                .SetOrClrIf(ProcessorStatus.N, (result & 0x80) != 0);
         }
 
         public static void AND(Operand op, Cpu cpu)
@@ -84,8 +84,8 @@ namespace C64Emu._6502
             var result = (byte)(cpu.A & op.Value);
             cpu.A = result;
             cpu.P = cpu.P
-                .SetOrClear(ProcessorStatus.Z, result == 0)
-                .SetOrClear(ProcessorStatus.N, (result & 0x80) != 0);
+                .SetOrClrIf(ProcessorStatus.Z, result == 0)
+                .SetOrClrIf(ProcessorStatus.N, (result & 0x80) != 0);
         }
 
         public static void ORA(Operand op, Cpu cpu)
@@ -93,8 +93,8 @@ namespace C64Emu._6502
             var result = (byte)(cpu.A | op.Value);
             cpu.A = result;
             cpu.P = cpu.P
-                .SetOrClear(ProcessorStatus.Z, result == 0)
-                .SetOrClear(ProcessorStatus.N, (result & 0x80) != 0);
+                .SetOrClrIf(ProcessorStatus.Z, result == 0)
+                .SetOrClrIf(ProcessorStatus.N, (result & 0x80) != 0);
         }
     }
 }
