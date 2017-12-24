@@ -213,5 +213,54 @@ namespace C64Emu._6502
                 .SetOrClrIf(ProcessorStatus.Z, cpu.Y == 0)
                 .SetOrClrIf(ProcessorStatus.N, (cpu.Y & 0x80) != 0);
         }
+
+        public static void TAX(Operand op, Cpu cpu)
+        {
+            cpu.X = cpu.A;
+            cpu.P = cpu.P
+                .SetOrClrIf(ProcessorStatus.Z, cpu.X == 0)
+                .SetOrClrIf(ProcessorStatus.N, (cpu.X & 0x80) != 0);
+        }
+
+        public static void TAY(Operand op, Cpu cpu)
+        {
+            cpu.Y = cpu.A;
+            cpu.P = cpu.P
+                .SetOrClrIf(ProcessorStatus.Z, cpu.Y == 0)
+                .SetOrClrIf(ProcessorStatus.N, (cpu.Y & 0x80) != 0);
+        }
+
+        public static void TSX(Operand op, Cpu cpu)
+        {
+            cpu.X = cpu.S;
+            cpu.P = cpu.P
+                .SetOrClrIf(ProcessorStatus.Z, cpu.X == 0)
+                .SetOrClrIf(ProcessorStatus.N, (cpu.X & 0x80) != 0);
+        }
+
+        public static void TXA(Operand op, Cpu cpu)
+        {
+            cpu.A = cpu.X;
+            cpu.P = cpu.P
+                .SetOrClrIf(ProcessorStatus.Z, cpu.A == 0)
+                .SetOrClrIf(ProcessorStatus.N, (cpu.A & 0x80) != 0);
+        }
+
+        public static void TXS(Operand op, Cpu cpu)
+        {
+            cpu.S = cpu.X;
+            cpu.P = cpu.P
+                .SetOrClrIf(ProcessorStatus.Z, cpu.S == 0)
+                .SetOrClrIf(ProcessorStatus.N, (cpu.S & 0x80) != 0);
+        }
+
+        public static void TYA(Operand op, Cpu cpu)
+        {
+            cpu.A = cpu.Y;
+            cpu.P = cpu.P
+                .SetOrClrIf(ProcessorStatus.Z, cpu.A == 0)
+                .SetOrClrIf(ProcessorStatus.N, (cpu.A & 0x80) != 0);
+        }
+
     }
 }

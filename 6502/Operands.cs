@@ -128,6 +128,13 @@ namespace C64Emu._6502
             new Operand(0xca, Mnemonic.DEX, AddressMode.Implied, 2, 1, OpLogic.Read, Instructions.DEX),
             new Operand(0x88, Mnemonic.DEY, AddressMode.Implied, 2, 1, OpLogic.Read, Instructions.DEY),
 
+            // Register transfer instructions
+            new Operand(0xaa, Mnemonic.TAX, AddressMode.Implied, 2, 1, OpLogic.Read, Instructions.TAX),
+            new Operand(0xa8, Mnemonic.TAY, AddressMode.Implied, 2, 1, OpLogic.Read, Instructions.TAY),
+            new Operand(0xba, Mnemonic.TSX, AddressMode.Implied, 2, 1, OpLogic.Read, Instructions.TSX),
+            new Operand(0x8a, Mnemonic.TXA, AddressMode.Implied, 2, 1, OpLogic.Read, Instructions.TXA),
+            new Operand(0x9a, Mnemonic.TXS, AddressMode.Implied, 2, 1, OpLogic.Read, Instructions.TXS),
+            new Operand(0x98, Mnemonic.TYA, AddressMode.Implied, 2, 1, OpLogic.Read, Instructions.TYA),
 
             // TODO: LAX
         }.ToImmutableDictionary(op => op.Code);
