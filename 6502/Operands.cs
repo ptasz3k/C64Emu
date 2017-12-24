@@ -73,6 +73,18 @@ namespace C64Emu._6502
             new Operand(0x19, Mnemonic.ORA, AddressMode.AbsoluteY, 4, 3, OpLogic.Read, Instructions.ORA),
             new Operand(0x01, Mnemonic.ORA, AddressMode.IndexedIndirect, 6, 2, OpLogic.Read, Instructions.ORA),
             new Operand(0x11, Mnemonic.ORA, AddressMode.IndirectIndexed, 5, 2, OpLogic.Read, Instructions.ORA),
+
+            // SBC
+            new Operand(0xe9, Mnemonic.SBC, AddressMode.Immediate, 2, 2, OpLogic.Read, Instructions.SBC),
+            new Operand(0xe5, Mnemonic.SBC, AddressMode.ZeroPage, 3, 2, OpLogic.Read, Instructions.SBC),
+            new Operand(0xf5, Mnemonic.SBC, AddressMode.ZeroPageX, 4, 2, OpLogic.Read, Instructions.SBC),
+            new Operand(0xed, Mnemonic.SBC, AddressMode.Absolute, 4, 3, OpLogic.Read, Instructions.SBC),
+            new Operand(0xfd, Mnemonic.SBC, AddressMode.AbsoluteX, 4, 3, OpLogic.Read, Instructions.SBC),
+            new Operand(0xf9, Mnemonic.SBC, AddressMode.AbsoluteY, 4, 3, OpLogic.Read, Instructions.SBC),
+            new Operand(0xe1, Mnemonic.SBC, AddressMode.IndexedIndirect, 6, 2, OpLogic.Read, Instructions.SBC),
+            new Operand(0xf1, Mnemonic.SBC, AddressMode.IndirectIndexed, 5, 2, OpLogic.Read, Instructions.SBC),
+
+            // TODO: SBC, CMP, BIT, LAX, NOP
         }.ToImmutableDictionary(op => op.Code);
     }
 }

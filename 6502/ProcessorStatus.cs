@@ -78,5 +78,15 @@ namespace C64Emu._6502
 
             return copy;
         }
+
+        public static bool IsSet(this ProcessorStatus self, ProcessorStatus flag)
+        {
+            return (self & flag) == flag;
+        }
+
+        public static bool IsClr(this ProcessorStatus self, ProcessorStatus flag)
+        {
+            return (self & flag) == 0;
+        }
     }
 }
