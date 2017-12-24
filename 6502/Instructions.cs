@@ -166,5 +166,20 @@ namespace C64Emu._6502
         {
             cpu.P = cpu.P.Clr(ProcessorStatus.V);
         }
+
+        public static void SEC(Operand op, Cpu cpu)
+        {
+            cpu.P = cpu.P.Set(ProcessorStatus.C);
+        }
+
+        public static void SED(Operand op, Cpu cpu)
+        {
+            cpu.P = cpu.P.Set(ProcessorStatus.D);
+        }
+
+        public static void SEI(Operand op, Cpu cpu)
+        {
+            cpu.P = cpu.P.Set(ProcessorStatus.I);
+        }
     }
 }
