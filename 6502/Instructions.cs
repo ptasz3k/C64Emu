@@ -9,29 +9,29 @@ namespace C64Emu._6502
     {
         private static Logger _logger = LogManager.GetCurrentClassLogger();
 
-        private static void BinaryADC(byte value, Cpu cpu, bool actAsCMP = false)
+        private static (byte value, bool c, bool n, bool z, bool v) BinaryADC(byte memory, byte register, bool carry)
         {
-            var sum = cpu.A + value + (cpu.P.IsSet(ProcessorStatus.C) ? 1 : 0);
+            var sum = register + memory + (carry? 1 : 0);
             var result = (byte)(sum & 0xff);
-            var p = cpu.P
-                .SetOrClrIf(ProcessorStatus.C, sum > 0xff)
-                .SetOrClrIf(ProcessorStatus.N, (result & 0x80) != 0)
-                .SetOrClrIf(ProcessorStatus.Z, result == 0);
+            var c = sum > 0xff;
+            var n = (result & 0x80) != 0;
+            var z = result == 0;
+            var v = ((register ^ result) & (memory ^ result) & 0x80) != 0;
 
-            if (!actAsCMP)
-            {
-                p = p.SetOrClrIf(ProcessorStatus.V, ((cpu.A ^ result) & (value ^ result) & 0x80) != 0);
-                cpu.A = result;
-            }
-
-            cpu.P = p;
+            return (result, c, n, z, v);
         }
 
         public static void ADC(Operand op, Cpu cpu)
         {
             if (cpu.P.IsClr(ProcessorStatus.D))
             {
-                BinaryADC(op.Value, cpu);
+                (var a, var c, var n, var z, var v) = BinaryADC(op.Value, cpu.A, cpu.P.IsSet(ProcessorStatus.C));
+                cpu.A = a;
+                cpu.P = cpu.P
+                    .SetOrClrIf(ProcessorStatus.C, c)
+                    .SetOrClrIf(ProcessorStatus.N, n)
+                    .SetOrClrIf(ProcessorStatus.Z, z)
+                    .SetOrClrIf(ProcessorStatus.V, v);
             }
             else
             {
@@ -44,17 +44,46 @@ namespace C64Emu._6502
         {
             if (cpu.P.IsClr(ProcessorStatus.D))
             {
-                BinaryADC((byte)(op.Value ^ 0xff), cpu);
+                (var a, var c, var n, var z, var v) = BinaryADC((byte)(op.Value ^ 0xff), cpu.A, cpu.P.IsSet(ProcessorStatus.C));
+                cpu.A = a;
+                cpu.P = cpu.P
+                    .SetOrClrIf(ProcessorStatus.C, c)
+                    .SetOrClrIf(ProcessorStatus.N, n)
+                    .SetOrClrIf(ProcessorStatus.Z, z)
+                    .SetOrClrIf(ProcessorStatus.V, v);
             }
             else
             {
+                // TODO: implement decimal mode
                 throw new NotImplementedException();
             }
         }
 
         public static void CMP(Operand op, Cpu cpu)
         {
-            BinaryADC((byte)(op.Value ^ 0xff), cpu, true);
+            (_, var c, var n, var z, _) = BinaryADC((byte)(op.Value ^ 0xff), cpu.A, false);
+            cpu.P = cpu.P
+                .SetOrClrIf(ProcessorStatus.C, c)
+                .SetOrClrIf(ProcessorStatus.N, n)
+                .SetOrClrIf(ProcessorStatus.Z, z);
+        }
+
+        public static void CPX(Operand op, Cpu cpu)
+        {
+            (_, var c, var n, var z, _) = BinaryADC((byte)(op.Value ^ 0xff), cpu.X, false);
+            cpu.P = cpu.P
+                .SetOrClrIf(ProcessorStatus.C, c)
+                .SetOrClrIf(ProcessorStatus.N, n)
+                .SetOrClrIf(ProcessorStatus.Z, z);
+        }
+
+        public static void CPY(Operand op, Cpu cpu)
+        {
+            (_, var c, var n, var z, _) = BinaryADC((byte)(op.Value ^ 0xff), cpu.Y, false);
+            cpu.P = cpu.P
+                .SetOrClrIf(ProcessorStatus.C, c)
+                .SetOrClrIf(ProcessorStatus.N, n)
+                .SetOrClrIf(ProcessorStatus.Z, z);
         }
 
         public static void LDA(Operand op, Cpu cpu)

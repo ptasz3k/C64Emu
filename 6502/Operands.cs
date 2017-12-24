@@ -94,6 +94,16 @@ namespace C64Emu._6502
             new Operand(0xc1, Mnemonic.CMP, AddressMode.IndexedIndirect, 6, 2, OpLogic.Read, Instructions.CMP),
             new Operand(0xd1, Mnemonic.CMP, AddressMode.IndirectIndexed, 5, 2, OpLogic.Read, Instructions.CMP),
 
+            /// CPX
+            new Operand(0xe0, Mnemonic.CPX, AddressMode.Immediate, 2, 2, OpLogic.Read, Instructions.CPX),
+            new Operand(0xe4, Mnemonic.CPX, AddressMode.ZeroPage, 3, 2, OpLogic.Read, Instructions.CPX),
+            new Operand(0xec, Mnemonic.CPX, AddressMode.Absolute, 4, 3, OpLogic.Read, Instructions.CPX),
+
+            /// CPY
+            new Operand(0xc0, Mnemonic.CPY, AddressMode.Immediate, 2, 2, OpLogic.Read, Instructions.CPY),
+            new Operand(0xc4, Mnemonic.CPY, AddressMode.ZeroPage, 3, 2, OpLogic.Read, Instructions.CPY),
+            new Operand(0xcc, Mnemonic.CPY, AddressMode.Absolute, 4, 3, OpLogic.Read, Instructions.CPY),
+
             // BIT
             new Operand(0x24, Mnemonic.BIT, AddressMode.ZeroPage, 3, 2, OpLogic.Read, Instructions.BIT),
             new Operand(0x2c, Mnemonic.BIT, AddressMode.Absolute, 4, 3, OpLogic.Read, Instructions.BIT),
