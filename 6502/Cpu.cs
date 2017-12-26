@@ -52,6 +52,8 @@ namespace C64Emu._6502
 
         private InstructionState _currentInstructionState;
 
+        UInt64 _currentCycle;
+
         public Cpu(Memory memory)
         {
             Memory = memory;
@@ -62,10 +64,13 @@ namespace C64Emu._6502
             X = 0;
             Y = 0;
             _currentInstructionState = InstructionState.FetchOpCode;
+            _currentCycle = 0;
         }
 
         public void RunCycle()
         {
+            _currentCycle++;
+
             if (_currentInstructionState == InstructionState.FetchOpCode)
             {
                 var opCode = Memory.Mem[PC];
