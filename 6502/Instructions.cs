@@ -61,7 +61,7 @@ namespace C64Emu._6502
 
         public static void CMP(Operand op, Cpu cpu)
         {
-            (_, var c, var n, var z, _) = BinaryADC((byte)(op.Value ^ 0xff), cpu.A, false);
+            (_, var c, var n, var z, _) = BinaryADC((byte)(op.Value ^ 0xff), cpu.A, true);
             cpu.P = cpu.P
                 .SetOrClrIf(ProcessorStatus.C, c)
                 .SetOrClrIf(ProcessorStatus.N, n)
@@ -70,7 +70,7 @@ namespace C64Emu._6502
 
         public static void CPX(Operand op, Cpu cpu)
         {
-            (_, var c, var n, var z, _) = BinaryADC((byte)(op.Value ^ 0xff), cpu.X, false);
+            (_, var c, var n, var z, _) = BinaryADC((byte)(op.Value ^ 0xff), cpu.X, true);
             cpu.P = cpu.P
                 .SetOrClrIf(ProcessorStatus.C, c)
                 .SetOrClrIf(ProcessorStatus.N, n)
@@ -79,7 +79,7 @@ namespace C64Emu._6502
 
         public static void CPY(Operand op, Cpu cpu)
         {
-            (_, var c, var n, var z, _) = BinaryADC((byte)(op.Value ^ 0xff), cpu.Y, false);
+            (_, var c, var n, var z, _) = BinaryADC((byte)(op.Value ^ 0xff), cpu.Y, true);
             cpu.P = cpu.P
                 .SetOrClrIf(ProcessorStatus.C, c)
                 .SetOrClrIf(ProcessorStatus.N, n)
