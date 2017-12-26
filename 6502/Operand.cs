@@ -8,7 +8,8 @@ namespace C64Emu._6502
     public class Operand
     {
         public Operand(byte code, Mnemonic mnemonic, AddressMode addressMode, byte maxTim, byte len, Func<Operand, Cpu, Operand> run,
-            Action<Operand, Cpu> runSpecific, byte tim = 1, byte addressLo = 0, byte addressHi = 0, byte value = 0)
+            Func<Operand, Cpu, Operand> runSpecific, byte tim = 1, byte addressLo = 0, byte addressHi = 0, byte value = 0,
+            byte result = 0)
         {
             Code = code;
             Mnemonic = mnemonic;
@@ -21,6 +22,7 @@ namespace C64Emu._6502
             AddressLo = addressLo;
             AddressHi = addressHi;
             Value = value;
+            Result = result;
         }
 
         /// <summary>
@@ -56,7 +58,7 @@ namespace C64Emu._6502
         /// <summary>
         /// Specific instruction logic
         /// </summary>
-        public Action<Operand, Cpu> RunSpecific { get; }
+        public Func<Operand, Cpu, Operand> RunSpecific { get; }
 
         /// <summary>
         /// Current cycle in instruction processing
@@ -77,5 +79,10 @@ namespace C64Emu._6502
         /// Value on which operand operates
         /// </summary>
         public byte Value { get; }
+
+        /// <summary>
+        /// Operand result
+        /// </summary>
+        public byte Result { get; }
     }
 }

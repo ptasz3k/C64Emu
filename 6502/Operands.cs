@@ -137,6 +137,44 @@ namespace C64Emu._6502
             new Operand(0x98, Mnemonic.TYA, AddressMode.Implied, 2, 1, OpLogic.Read, Instructions.TYA),
 
             // TODO: LAX
+
+            // Read-Modify-Write instructions
+            new Operand(0x0a, Mnemonic.ASL, AddressMode.Accumulator, 2, 1, OpLogic.ReadModifyWrite, Instructions.ASL),
+            new Operand(0x06, Mnemonic.ASL, AddressMode.ZeroPage, 5, 2, OpLogic.ReadModifyWrite, Instructions.ASL),
+            new Operand(0x16, Mnemonic.ASL, AddressMode.ZeroPageX, 6, 2, OpLogic.ReadModifyWrite, Instructions.ASL),
+            new Operand(0x0e, Mnemonic.ASL, AddressMode.Absolute, 6, 3, OpLogic.ReadModifyWrite, Instructions.ASL),
+            new Operand(0x1e, Mnemonic.ASL, AddressMode.AbsoluteX, 7, 3, OpLogic.ReadModifyWrite, Instructions.ASL),
+
+            new Operand(0x4a, Mnemonic.LSR, AddressMode.Accumulator, 2, 1, OpLogic.ReadModifyWrite, Instructions.LSR),
+            new Operand(0x46, Mnemonic.LSR, AddressMode.ZeroPage, 5, 2, OpLogic.ReadModifyWrite, Instructions.LSR),
+            new Operand(0x56, Mnemonic.LSR, AddressMode.ZeroPageX, 6, 2, OpLogic.ReadModifyWrite, Instructions.LSR),
+            new Operand(0x4e, Mnemonic.LSR, AddressMode.Absolute, 6, 3, OpLogic.ReadModifyWrite, Instructions.LSR),
+            new Operand(0x5e, Mnemonic.LSR, AddressMode.AbsoluteX, 7, 3, OpLogic.ReadModifyWrite, Instructions.LSR),
+
+            new Operand(0x2a, Mnemonic.ROL, AddressMode.Accumulator, 2, 1, OpLogic.ReadModifyWrite, Instructions.ROL),
+            new Operand(0x26, Mnemonic.ROL, AddressMode.ZeroPage, 5, 2, OpLogic.ReadModifyWrite, Instructions.ROL),
+            new Operand(0x36, Mnemonic.ROL, AddressMode.ZeroPageX, 6, 2, OpLogic.ReadModifyWrite, Instructions.ROL),
+            new Operand(0x2e, Mnemonic.ROL, AddressMode.Absolute, 6, 3, OpLogic.ReadModifyWrite, Instructions.ROL),
+            new Operand(0x3e, Mnemonic.ROL, AddressMode.AbsoluteX, 7, 3, OpLogic.ReadModifyWrite, Instructions.ROL),
+
+            new Operand(0x6a, Mnemonic.ROR, AddressMode.Accumulator, 2, 1, OpLogic.ReadModifyWrite, Instructions.ROR),
+            new Operand(0x66, Mnemonic.ROR, AddressMode.ZeroPage, 5, 2, OpLogic.ReadModifyWrite, Instructions.ROR),
+            new Operand(0x76, Mnemonic.ROR, AddressMode.ZeroPageX, 6, 2, OpLogic.ReadModifyWrite, Instructions.ROR),
+            new Operand(0x6e, Mnemonic.ROR, AddressMode.Absolute, 6, 3, OpLogic.ReadModifyWrite, Instructions.ROR),
+            new Operand(0x7e, Mnemonic.ROR, AddressMode.AbsoluteX, 7, 3, OpLogic.ReadModifyWrite, Instructions.ROR),
+
+            new Operand(0xe6, Mnemonic.INC, AddressMode.ZeroPage, 5, 2, OpLogic.ReadModifyWrite, Instructions.INC),
+            new Operand(0xf6, Mnemonic.INC, AddressMode.ZeroPageX, 6, 2, OpLogic.ReadModifyWrite, Instructions.INC),
+            new Operand(0xee, Mnemonic.INC, AddressMode.Absolute, 6, 3, OpLogic.ReadModifyWrite, Instructions.INC),
+            new Operand(0xfe, Mnemonic.INC, AddressMode.AbsoluteX, 7, 3, OpLogic.ReadModifyWrite, Instructions.INC),
+
+            new Operand(0xc6, Mnemonic.DEC, AddressMode.ZeroPage, 5, 2, OpLogic.ReadModifyWrite, Instructions.DEC),
+            new Operand(0xd6, Mnemonic.DEC, AddressMode.ZeroPageX, 6, 2, OpLogic.ReadModifyWrite, Instructions.DEC),
+            new Operand(0xce, Mnemonic.DEC, AddressMode.Absolute, 6, 3, OpLogic.ReadModifyWrite, Instructions.DEC),
+            new Operand(0xde, Mnemonic.DEC, AddressMode.AbsoluteX, 7, 3, OpLogic.ReadModifyWrite, Instructions.DEC),
+
+            // TODO: SLO, SRE, RLA, RRA, ISB, DCP
+
         }.ToImmutableDictionary(op => op.Code);
     }
 }
