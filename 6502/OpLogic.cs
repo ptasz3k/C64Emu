@@ -28,6 +28,131 @@ namespace C64Emu._6502
             );
         }
 
+        public static Operand Write(Operand op, Cpu cpu)
+        {
+            const bool pageCross = false;
+            byte? addressLo = null;
+            byte? addressHi = null;
+            byte? value = null;
+
+            switch (op.Tim)
+            {
+                case 1
+                when op.AddressMode == AddressMode.Absolute
+                || op.AddressMode == AddressMode.ZeroPage
+                || op.AddressMode == AddressMode.ZeroPageX
+                || op.AddressMode == AddressMode.ZeroPageY
+                || op.AddressMode == AddressMode.AbsoluteX
+                || op.AddressMode == AddressMode.AbsoluteY
+                || op.AddressMode == AddressMode.IndexedIndirect
+                || op.AddressMode == AddressMode.IndirectIndexed:
+                    // fetch opcode
+                    if (cpu.Memory.Mem[cpu.PC] != op.Code)
+                    {
+                        _logger.Fatal($"Opcode {op.Code} in operand {op.Mnemonic} ({op.AddressMode}) differs from that read from memory ({cpu.Memory.Mem[cpu.PC]}).");
+                        throw new InvalidOperationException();
+                    }
+                    cpu.PC++;
+                    break;
+                case 2
+                when op.AddressMode == AddressMode.Absolute
+                || op.AddressMode == AddressMode.ZeroPage
+                || op.AddressMode == AddressMode.ZeroPageX
+                || op.AddressMode == AddressMode.ZeroPageY
+                || op.AddressMode == AddressMode.AbsoluteX
+                || op.AddressMode == AddressMode.AbsoluteY
+                || op.AddressMode == AddressMode.IndexedIndirect
+                || op.AddressMode == AddressMode.IndirectIndexed:
+                    addressLo = cpu.Memory.Mem[cpu.PC];
+                    cpu.PC++;
+                    break;
+                case 3
+                when op.AddressMode == AddressMode.Absolute
+                || op.AddressMode == AddressMode.AbsoluteX
+                || op.AddressMode == AddressMode.AbsoluteY:
+                    addressHi = cpu.Memory.Mem[cpu.PC];
+                    cpu.PC++;
+                    break;
+                case 3
+                when op.AddressMode == AddressMode.ZeroPage:
+                    op.RunSpecific(op, cpu);
+                    break;
+                case 3
+                when op.AddressMode == AddressMode.ZeroPageX
+                || op.AddressMode == AddressMode.ZeroPageY:
+                    // read from effective address and then add index to it, store in next cycle
+                    value = cpu.Memory.Mem[op.AddressLo];
+                    addressLo = (byte)(op.AddressLo + (op.AddressMode == AddressMode.ZeroPageX ? cpu.X : cpu.Y));
+                    break;
+                case 3
+                when op.AddressMode == AddressMode.IndexedIndirect:
+                    addressLo += cpu.X;
+                    break;
+                case 3
+                when op.AddressMode == AddressMode.IndirectIndexed:
+                    // move pointer to address hi to read hi address from pointer + 1 in next cycle
+                    addressHi = op.AddressLo;
+                    addressLo = cpu.Memory.Mem[op.AddressLo];
+                    break;
+                case 4
+                when op.AddressMode == AddressMode.Absolute
+                || op.AddressMode == AddressMode.ZeroPageX
+                || op.AddressMode == AddressMode.ZeroPageY:
+                    op.RunSpecific(op, cpu);
+                    break;
+                case 4
+                when op.AddressMode == AddressMode.AbsoluteX
+                || op.AddressMode == AddressMode.AbsoluteY:
+                    var offset = op.AddressLo + (op.AddressMode == AddressMode.AbsoluteX ? cpu.X : cpu.Y);
+                    addressLo = (byte)(offset & 0xff);
+                    addressHi = (byte)(op.AddressHi + (offset > 0xff ? 1 : 0));
+                    // read from effective address, it may be smaller by $100 at this cycle
+                    value = cpu.Memory.Mem[addressLo.Value | (op.AddressHi << 8)];
+                    break;
+                case 4
+                when op.AddressMode == AddressMode.IndexedIndirect:
+                    // move pointer to address hi to read hi address from pointer + 1 in next cycle
+                    addressHi = op.AddressLo;
+                    addressLo = cpu.Memory.Mem[op.AddressLo];
+                    break;
+                case 4
+                when op.AddressMode == AddressMode.IndirectIndexed:
+                    addressHi = cpu.Memory.Mem[(byte)(op.AddressHi + 1)];
+                    break;
+                case 5
+                when op.AddressMode == AddressMode.AbsoluteX
+                || op.AddressMode == AddressMode.AbsoluteY:
+                    op.RunSpecific(op, cpu);
+                    break;
+                case 5
+                when op.AddressMode == AddressMode.IndexedIndirect:
+                    // base pointer address on zeropage is now kept in addressHi (see cycle 5)
+                    addressHi = cpu.Memory.Mem[(byte)(op.AddressHi + 1)];
+                    break;
+                case 5
+                when op.AddressMode == AddressMode.IndirectIndexed:
+                    offset = op.AddressLo + cpu.Y;
+                    addressLo = (byte)(offset & 0xff);
+                    addressHi = (byte)(op.AddressHi + (offset > 0xff ? 1 : 0));
+                    // read from effective address, it may be smaller by $100 at this cycle
+                    value = cpu.Memory.Mem[addressLo.Value | (op.AddressHi << 8)];
+                    break;
+                case 6
+                when op.AddressMode == AddressMode.IndexedIndirect
+                || op.AddressMode == AddressMode.IndirectIndexed:
+                    op.RunSpecific(op, cpu);
+                    break;
+                default:
+                    _logger.Fatal($"Unknown state for {op.Mnemonic} ({op.AddressMode}), cycle={op.Tim}/{op.MaxTim}.");
+                    throw new NotImplementedException($"Unknown state for {op.Mnemonic} ({op.AddressMode}), cycle={op.Tim}/{op.MaxTim}.");
+                    break;
+            }
+
+            var next = (op.Tim <= op.MaxTim) ? NextCycleOperand(op, pageCross, addressLo, addressHi, value) : op;
+
+            return next;
+        }
+
         public static Operand ReadModifyWrite(Operand op, Cpu cpu)
         {
             const bool pageCross = false;

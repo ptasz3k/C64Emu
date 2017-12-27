@@ -433,5 +433,23 @@ namespace C64Emu._6502
                 result
             );
         }
+
+        public static Operand STA(Operand op, Cpu cpu)
+        {
+            cpu.Memory.Mem[op.AddressLo | (op.AddressHi << 8)] = cpu.A;
+            return op;
+        }
+
+        public static Operand STX(Operand op, Cpu cpu)
+        {
+            cpu.Memory.Mem[op.AddressLo | (op.AddressHi << 8)] = cpu.X;
+            return op;
+        }
+
+        public static Operand STY(Operand op, Cpu cpu)
+        {
+            cpu.Memory.Mem[op.AddressLo | (op.AddressHi << 8)] = cpu.Y;
+            return op;
+        }
     }
 }

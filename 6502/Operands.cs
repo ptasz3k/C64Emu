@@ -175,6 +175,25 @@ namespace C64Emu._6502
 
             // TODO: SLO, SRE, RLA, RRA, ISB, DCP
 
+            // Write instructions
+            new Operand(0x85, Mnemonic.STA, AddressMode.ZeroPage, 3, 2, OpLogic.Write, Instructions.STA),
+            new Operand(0x95, Mnemonic.STA, AddressMode.ZeroPageX, 4, 2, OpLogic.Write, Instructions.STA),
+            new Operand(0x8d, Mnemonic.STA, AddressMode.Absolute, 4, 3, OpLogic.Write, Instructions.STA),
+            new Operand(0x9d, Mnemonic.STA, AddressMode.AbsoluteX, 5, 3, OpLogic.Write, Instructions.STA),
+            new Operand(0x99, Mnemonic.STA, AddressMode.AbsoluteY, 5, 3, OpLogic.Write, Instructions.STA),
+            new Operand(0x81, Mnemonic.STA, AddressMode.IndexedIndirect, 6, 2, OpLogic.Write, Instructions.STA),
+            new Operand(0x91, Mnemonic.STA, AddressMode.IndirectIndexed, 6, 2, OpLogic.Write, Instructions.STA),
+
+            new Operand(0x86, Mnemonic.STX, AddressMode.ZeroPage, 3, 2, OpLogic.Write, Instructions.STX),
+            new Operand(0x96, Mnemonic.STX, AddressMode.ZeroPageY, 4, 2, OpLogic.Write, Instructions.STX),
+            new Operand(0x8e, Mnemonic.STX, AddressMode.Absolute, 4, 3, OpLogic.Write, Instructions.STX),
+
+            new Operand(0x83, Mnemonic.STY, AddressMode.ZeroPage, 3, 2, OpLogic.Write, Instructions.STY),
+            new Operand(0x94, Mnemonic.STY, AddressMode.ZeroPageX, 4, 2, OpLogic.Write, Instructions.STY),
+            new Operand(0x8c, Mnemonic.STY, AddressMode.Absolute, 4, 3, OpLogic.Write, Instructions.STY),
+
+            // TODO: SAX, SHA, SHX, SHY
+
         }.ToImmutableDictionary(op => op.Code);
     }
 }
