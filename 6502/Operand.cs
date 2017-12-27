@@ -84,5 +84,56 @@ namespace C64Emu._6502
         /// Operand result
         /// </summary>
         public byte Result { get; }
+
+        public override string ToString()
+        {
+            var str = $"{Mnemonic}";
+
+            switch (AddressMode)
+            {
+                case AddressMode.Accumulator:
+                    str += " A";
+                    break;
+                case AddressMode.Absolute:
+                    str += string.Format(" $");
+                    break;
+                case AddressMode.AbsoluteX:
+                    str += string.Format(" $,X");
+                    break;
+                case AddressMode.AbsoluteY:
+                    str += string.Format(" $,Y");
+                    break;
+                case AddressMode.Immediate:
+                    str += string.Format(" #$");
+                    break;
+                case AddressMode.Implied:
+                    break;
+                case AddressMode.IndexedIndirect:
+                    str += string.Format(" ($,X)");
+                    break;
+                case AddressMode.Indirect:
+                    str += string.Format(" ($)");
+                    break;
+                case AddressMode.IndirectIndexed:
+                    str += string.Format(" ($),Y");
+                    break;
+                case AddressMode.Relative:
+                    str += string.Format(" #$");
+                    break;
+                case AddressMode.ZeroPage:
+                    str += string.Format(" $");
+                    break;
+                case AddressMode.ZeroPageX:
+                    str += string.Format(" $,X");
+                    break;
+                case AddressMode.ZeroPageY:
+                    str += string.Format(" $, Y");
+                    break;
+                default:
+                    break;
+            }
+
+            return str;
+        }
     }
 }
