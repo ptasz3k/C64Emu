@@ -192,6 +192,11 @@ namespace C64Emu._6502
             new Operand(0x94, Mnemonic.STY, AddressMode.ZeroPageX, 4, 2, OpLogic.Write, Instructions.STY),
             new Operand(0x8c, Mnemonic.STY, AddressMode.Absolute, 4, 3, OpLogic.Write, Instructions.STY),
 
+            // Jump
+            new Operand(0x4c, Mnemonic.JMP, AddressMode.Absolute, 3, 3, OpLogic.Jump, (op, cpu) => op),
+            new Operand(0x6c, Mnemonic.JMP, AddressMode.AbsoluteIndirect, 5, 3, OpLogic.Jump, (op, cpu) => op),
+
+
             // TODO: SAX, SHA, SHX, SHY
 
         }.ToImmutableDictionary(op => op.Code);

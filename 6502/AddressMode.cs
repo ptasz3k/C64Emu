@@ -14,6 +14,7 @@ namespace C64Emu._6502
         ZeroPageY,
         Relative,
         Absolute,
+        AbsoluteIndirect,
         AbsoluteX,
         AbsoluteY,
         Indirect,

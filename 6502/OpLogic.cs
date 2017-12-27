@@ -28,6 +28,61 @@ namespace C64Emu._6502
             );
         }
 
+        public static Operand Jump(Operand op, Cpu cpu)
+        {
+            byte? addressLo = null;
+            byte? addressHi = null;
+            byte? value = null;
+
+            switch (op.Tim)
+            {
+                case 1
+                when op.AddressMode == AddressMode.Absolute
+                || op.AddressMode == AddressMode.AbsoluteIndirect:
+                    if (cpu.Memory.Mem[cpu.PC] != op.Code)
+                    {
+                        _logger.Fatal($"Opcode {op.Code} in operand {op.Mnemonic} ({op.AddressMode}) differs from that read from memory ({cpu.Memory.Mem[cpu.PC]}).");
+                        throw new InvalidOperationException();
+                    }
+                    cpu.PC++;
+                    break;
+                case 2
+                when op.AddressMode == AddressMode.Absolute
+                || op.AddressMode == AddressMode.AbsoluteIndirect:
+                    addressLo = cpu.Memory.Mem[cpu.PC];
+                    cpu.PC++;
+                    break;
+                case 3
+                when op.AddressMode == AddressMode.Absolute:
+                    var address = (UInt16)(op.AddressLo | (cpu.Memory.Mem[cpu.PC] << 8));
+                    cpu.PC = address;
+                    break;
+                case 3
+                when op.AddressMode == AddressMode.AbsoluteIndirect:
+                    addressHi = cpu.Memory.Mem[cpu.PC];
+                    cpu.PC++;
+                    break;
+                case 4
+                when op.AddressMode == AddressMode.AbsoluteIndirect:
+                    // destination address low byte kept in op.Value
+                    value = cpu.Memory.Mem[op.AddressLo | (op.AddressHi << 8)];
+                    break;
+                case 5
+                when op.AddressMode == AddressMode.AbsoluteIndirect:
+                    address = (UInt16)(op.Value | (cpu.Memory.Mem[(byte)(addressLo + 1) | (op.AddressHi << 8)]));
+                    cpu.PC = address;
+                    break;
+                default:
+                    _logger.Fatal($"Unknown state for {op.Mnemonic} ({op.AddressMode}), cycle={op.Tim}/{op.MaxTim}.");
+                    throw new NotImplementedException($"Unknown state for {op.Mnemonic} ({op.AddressMode}), cycle={op.Tim}/{op.MaxTim}.");
+                    break;
+            }
+
+            var next = NextCycleOperand(op, addressLo: addressLo, addressHi: addressHi, value: value);
+
+            return next;
+        }
+
         public static Operand Write(Operand op, Cpu cpu)
         {
             const bool pageCross = false;
