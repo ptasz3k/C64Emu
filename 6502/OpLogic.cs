@@ -30,7 +30,7 @@ namespace C64Emu._6502
 
         public static Operand ReadModifyWrite(Operand op, Cpu cpu)
         {
-            var pageCross = false;
+            const bool pageCross = false;
             byte? addressLo = null;
             byte? addressHi = null;
             byte? value = null;
@@ -86,6 +86,7 @@ namespace C64Emu._6502
                     break;
                 case 4
                 when op.AddressMode == AddressMode.ZeroPage:
+                    // write value back to RAM, and then run an operation on it, correct result will be written in next cycle
                     cpu.Memory.Mem[op.AddressLo] = op.Value;
                     op = op.RunSpecific(op, cpu);
                     break;
@@ -99,9 +100,12 @@ namespace C64Emu._6502
                     var effectiveOffset = op.AddressLo + cpu.X;
                     addressLo = (byte)effectiveOffset;
                     addressHi = (byte)(op.AddressHi + effectiveOffset / 0x100);
+                    // read from effective address, it may be invalid at this time (smaller by $100)
+                    value = cpu.Memory.Mem[addressLo.Value | (op.AddressHi << 8)];
                     break;
                 case 5
                 when op.AddressMode == AddressMode.Absolute:
+                    // write value back to RAM, and then run an operation on it, correct result will be written in next cycle
                     cpu.Memory.Mem[op.AddressLo | (op.AddressHi << 8)] = op.Value;
                     op = op.RunSpecific(op, cpu);
                     break;
@@ -112,11 +116,13 @@ namespace C64Emu._6502
                 case 5
                 when op.AddressMode == AddressMode.ZeroPageX:
                     // FIXME: can be linked with Absolute address mode case
+                    // write value back to RAM, and then run an operation on it, correct result will be written in next cycle
                     cpu.Memory.Mem[op.AddressLo] = op.Value;
                     op = op.RunSpecific(op, cpu);
                     break;
                 case 5
                 when op.AddressMode == AddressMode.AbsoluteX:
+                    // read from valid address
                     value = cpu.Memory.Mem[op.AddressLo + (op.AddressHi << 8)];
                     break;
                 case 6
@@ -130,6 +136,8 @@ namespace C64Emu._6502
                     break;
                 case 6
                 when op.AddressMode == AddressMode.AbsoluteX:
+                    // write the value back to effective address, and then run an operation on it,
+                    // correct result will be written in next cycle
                     cpu.Memory.Mem[op.AddressLo | (op.AddressHi << 8)] = op.Value;
                     op = op.RunSpecific(op, cpu);
                     break;
@@ -200,14 +208,17 @@ namespace C64Emu._6502
                     break;
                 case 3
                 when op.AddressMode == AddressMode.ZeroPageX:
+                    value = cpu.Memory.Mem[op.AddressLo];
                     addressLo = (byte)(op.AddressLo + cpu.X);
                     break;
                 case 3
                 when op.AddressMode == AddressMode.ZeroPageY:
+                    value = cpu.Memory.Mem[op.AddressLo];
                     addressLo = (byte)(op.AddressLo + cpu.Y);
                     break;
                 case 3
                 when op.AddressMode == AddressMode.IndexedIndirect:
+                    value = cpu.Memory.Mem[op.AddressLo];
                     addressLo = (byte)(op.AddressLo + cpu.X);
                     break;
                 case 3
@@ -232,6 +243,8 @@ namespace C64Emu._6502
                         addressLo = (byte)(op.AddressLo + offset);
                         addressHi = (byte)(op.AddressHi + 1);
                         pageCross = true;
+                        // read from invalid address
+                        value = cpu.Memory.Mem[addressLo.Value | (op.AddressHi << 8)];
                     }
                     else
                     {
@@ -269,6 +282,8 @@ namespace C64Emu._6502
                         addressLo = (byte)(op.AddressLo + cpu.Y);
                         addressHi = (byte)(op.AddressHi + 1);
                         pageCross = true;
+                        // read from invalid address, it's smaller by $100 from valid address
+                        value = cpu.Memory.Mem[addressLo.Value | (op.AddressHi << 8)];
                     }
                     else
                     {
